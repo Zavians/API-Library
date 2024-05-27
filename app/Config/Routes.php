@@ -22,10 +22,11 @@ $routes->group('api', ['namespace' => 'App\Controllers\Api'], function($routes) 
     $routes->group('admin', ['namespace' => 'App\Controllers\Api\Admin'], function($routes) {
         $routes->post('register', 'AdminController::userRegister', ['filter' => 'adminauth']);
         $routes->get('invalid', 'AdminController::invalid');
+
+        //Book Controller
+        $routes->post('tambah-buku', 'BookController::addBuku', ['filter' => 'adminauth']);
+        $routes->put('perbarui-buku/(:num)', 'BookController::updateBuku/$1', ['filter' => 'adminauth']);
     });
 
-    $routes->group('user', ['namespace' => 'App\Controllers\Api\User'], function($routes) {
-        $routes->post('register', 'AdminController::userRegister', ['filter' => 'adminauth']);
-    });
     
 });
