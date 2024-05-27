@@ -3,16 +3,19 @@
 namespace App\Controllers\Api\Admin;
 
 use App\Models\BukuModel;
+use App\Models\PeminjamanModel;
 use CodeIgniter\HTTP\ResponseInterface;
 use CodeIgniter\RESTful\ResourceController;
 
 class BookController extends ResourceController
 {
     protected $BukuModel;
+    protected $PeminjamanModel;
 
     public function __construct()
     {
         $this->BukuModel = new BukuModel();
+        $this->PeminjamanModel = new PeminjamanModel();
     }
 
     public function addBuku()
@@ -78,7 +81,7 @@ class BookController extends ResourceController
         return $this->respondCreated($response);
     }
 
-    public function updateBuku($id_buku)
+    public function updateBuku($id_buku = null)
     {
         $dataBuku = $this->BukuModel->find($id_buku);
 
@@ -169,5 +172,72 @@ class BookController extends ResourceController
             ];
         }
         return $this->respond($response);
+    }
+
+    public function showAllBuku() {
+        $dataBuku = $this->BukuModel->findAll();
+
+        if (!empty($dataBuku)) {
+            $response = [
+                'status' => true,
+                'message'=>'Data ditampilkan',
+                'data' => $dataBuku
+            ];
+        } else {
+            $response = [
+                'status' => true,
+                'message'=>'Tidak ada data buku',
+                'data' => []
+            ];
+        }
+
+        return $this->respond($response);
+    }
+
+    public function showBukuById($id_buku = null){
+        $dataBuku = $this->BukuModel->find($id_buku);
+        if (!empty($dataBuku)) {
+            $response = [
+                'status' => true,
+                'message'=>'Data ditampilkan',
+                'data' => $dataBuku
+            ];
+        } else {
+            $response = [
+                'status' => true,
+                'message'=>'Tidak ada data buku',
+                'data' => []
+            ];
+        }
+
+        return $this->respond($response);
+    }
+
+    public function deleteBuku($id_buku){
+        $dataBuku = $this->BukuModel->find($id_buku);
+
+        if (!empty($dataBuku)) {
+            $cekData = $this->PeminjamanModel->where('buku_id', $id_buku)->findAll();
+            if (!empty($cekData)) {
+                $response = [
+                    'status' => true,
+                    'message' => 'Data Sedang digunakan',
+                    'data' => []
+                ];
+            } else {
+                $this->BukuModel->delete($dataBuku);
+                $response = [
+                    'status' => true,
+                    'message' => 'Data dihapus',
+                    'data' => []
+                ];
+            }
+        } else {
+            $response = [
+                'status' => false,
+                'message' => 'Data tidak ditemukan',
+                'data' => []
+            ];
+        }
     }
 }

@@ -26,6 +26,8 @@ $routes->group('api', ['namespace' => 'App\Controllers\Api'], function($routes) 
         //Book Controller
         $routes->post('tambah-buku', 'BookController::addBuku', ['filter' => 'adminauth']);
         $routes->put('perbarui-buku/(:num)', 'BookController::updateBuku/$1', ['filter' => 'adminauth']);
+        $routes->get('lihat-semua-buku', 'BookController::showAllBuku', ['filter' => 'adminauth']);
+        $routes->get('lihat-buku/(:num)', 'BookController::showBukuById/$1', ['filter' => 'adminauth']);
     });
 
     
