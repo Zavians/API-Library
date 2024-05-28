@@ -50,6 +50,17 @@ class AdminController extends ResourceController
         return $this->respondCreated($response);
     }
 
+    public function logout()  {
+        auth()->logout();
+        auth()->user()->revokeAllAccessTokens();
+
+        return $this->respondDeleted([
+            'status' => true,
+            'message' => 'Logout Berhasil',
+            'data' => []
+        ]);
+    }
+
     public function invalid() {
         return $this-> respondCreated([
             'status' => false,
