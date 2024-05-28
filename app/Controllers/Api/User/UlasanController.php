@@ -169,4 +169,12 @@ class UlasanController extends ResourceController
 
         return $this->respondDeleted($response);
     }
+
+    public function invalid() {
+        return $this-> respondCreated([
+            'status' => false,
+            'message' => 'Akses Gagal',
+            'data' => []
+        ]);
+    }
 }

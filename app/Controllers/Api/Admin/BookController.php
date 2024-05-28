@@ -240,4 +240,12 @@ class BookController extends ResourceController
             ];
         }
     }
+
+    public function invalid() {
+        return $this-> respondCreated([
+            'status' => false,
+            'message' => 'Akses Gagal',
+            'data' => []
+        ]);
+    }
 }

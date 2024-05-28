@@ -28,6 +28,10 @@ $routes->group('api', ['namespace' => 'App\Controllers\Api'], function($routes) 
         $routes->put('perbarui-buku/(:num)', 'BookController::updateBuku/$1', ['filter' => 'adminauth']);
         $routes->get('lihat-semua-buku', 'BookController::showAllBuku', ['filter' => 'adminauth']);
         $routes->get('lihat-buku/(:num)', 'BookController::showBukuById/$1', ['filter' => 'adminauth']);
+
+        //Peminjaman Controller
+        $routes->put('perbarui-pinjaman/(:num)', 'PeminjamanController::updatePeminjaman/$1', ['filter' => 'adminauth']);
+
     });
 
     $routes->group('user', ['namespace' => 'App\Controllers\Api\User'], function($routes) {
@@ -35,10 +39,15 @@ $routes->group('api', ['namespace' => 'App\Controllers\Api'], function($routes) 
        $routes->post('ulas-buku/(:num)', 'UlasanController::addUlasan/$1', ['filter' => 'userauth']);
        $routes->get('ulasan-buku/(:num)', 'UlasanController::showAllUlasan/$1', ['filter' => 'userauth']);
        $routes->put('ubah-ulasan-buku/(:num)/(:num)', 'UlasanController::updateUlasan/$1/$2', ['filter' => 'userauth']);
-       $routes->post('hapus-ulasan-buku/(:num)/(:num)', 'UlasanController::deleteUlasan/$1/$2', ['filter' => 'userauth']);
+       $routes->delete('hapus-ulasan-buku/(:num)/(:num)', 'UlasanController::deleteUlasan/$1/$2', ['filter' => 'userauth']);
 
        //Peminjaman Controller
-
+       $routes->post('pinjam-buku/(:num)', 'PeminjamanController::addPeminjaman/$1', ['filter' => 'userauth']);
+       $routes->get('sejarah-pinjaman', 'PeminjamanController::showAllPeminjaman', ['filter' => 'userauth']);
+       $routes->get('sejarah-pinjaman-pinjam', 'PeminjamanController::showPinjamPeminjaman', ['filter' => 'userauth']);
+       $routes->get('sejarah-pinjaman-dikembalikan', 'PeminjamanController::showDikembalikanPeminjaman', ['filter' => 'userauth']);
+        // Invalid User
+       $routes->get('invalid', 'PeminjamanController::invalid');
     });
 
     
