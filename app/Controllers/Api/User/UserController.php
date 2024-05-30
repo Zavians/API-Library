@@ -21,7 +21,45 @@ class UserController extends ResourceController
     }
 
     public function resetPassword() {
+        $user_id = auth()->id();
+        $dataUser = $this->AuthIdentitiesModel->where('user_id', $user_id)->first();
+
+        $passwordLama = $this->request->getVar('password_lama');
+        $passwordBaru = $this->request->getVar('password_baru');
         
+        if (!empty($dataUser)) {
+            if (!password_verify($passwordBaru, $dataUser['secret2'])) {
+                $response = [
+                    'status' => false,
+                    'message' => 'Verifikasi Password Salah, Gagal Merubah Password',
+                    'data' => []
+                ];
+            } else {
+                if (isset($passwordBaru) && !empty($passwordBaru)) {
+                    $hashPassword = password_hash($passwordBaru, PASSWORD_DEFAULT);
+
+                    $this->AuthIdentitiesModel->update($dataUser['id'], ['secret2' => $hashPassword] );
+                    $response = [
+                        'status' => true,
+                        'message' => 'Password berhasil diubah',
+                        'data' => []
+                    ];
+                } else {
+                    $response = [
+                        'status' => false,
+                        'message' => 'Password baru tidak boleh kosong dan harus minimal 8 karakter',
+                        'data' => []
+                    ];
+                }
+            }
+        } else {
+            $response = [
+                'status' => false,
+                'message' => 'Data Pengguna Tidak ditemukan',
+                'data' => []
+            ];
+        }
+        return $this->respondUpdated($response);
     }
 
     public function ubahUsername() {
