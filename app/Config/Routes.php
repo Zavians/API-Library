@@ -21,6 +21,9 @@ $routes->group('api', ['namespace' => 'App\Controllers\Api'], function($routes) 
     $routes->group('admin', ['namespace' => 'App\Controllers\Api\Admin'], function($routes) {
         $routes->post('register', 'AdminController::userRegister', ['filter' => 'adminauth']);
         $routes->get('logout', 'AdminController::logout', ['filter' => 'adminauth']);
+        $routes->put('ganti-password', 'AdminController::ubahPassword', ['filter' => 'adminauth']);
+        $routes->put('ganti-username', 'AdminController::ubahUsername', ['filter' => 'adminauth']);
+        $routes->put('ganti-email', 'AdminController::ubahEmail', ['filter' => 'adminauth']);
         $routes->get('invalid', 'AdminController::invalid');
 
         //Book Controller
@@ -46,7 +49,9 @@ $routes->group('api', ['namespace' => 'App\Controllers\Api'], function($routes) 
        $routes->get('sejarah-pinjaman', 'PeminjamanController::showAllPeminjaman', ['filter' => 'userauth']);
        $routes->get('sejarah-pinjaman-pinjam', 'PeminjamanController::showPinjamPeminjaman', ['filter' => 'userauth']);
        $routes->get('sejarah-pinjaman-dikembalikan', 'PeminjamanController::showDikembalikanPeminjaman', ['filter' => 'userauth']);
-        // Invalid User
+        //User Controller
+        $routes->put('ubah-username', 'UserController::ubahUsername', ['filter' => 'userauth']);
+        $routes->put('ubah-email', 'UserController::ubahEmail', ['filter' => 'userauth']);
        $routes->get('invalid', 'PeminjamanController::invalid');
     });
 

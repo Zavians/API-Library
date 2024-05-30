@@ -2,19 +2,23 @@
 
 namespace App\Controllers\Api\Admin;
 
+use App\Models\AuthIdentitiesModel;
 use CodeIgniter\Shield\Entities\User;
 use CodeIgniter\HTTP\ResponseInterface;
 use CodeIgniter\Shield\Models\UserModel;
 use CodeIgniter\RESTful\ResourceController;
+use PhpParser\Node\Expr\Isset_;
 
 class AdminController extends ResourceController
 {
 
     protected $UserModel;
+    protected $AuthIdentitiesModel;
 
     public function __construct()
     {
         $this->UserModel = new UserModel();
+        $this->AuthIdentitiesModel = new AuthIdentitiesModel();
     }
     public function userRegister()
     {
@@ -50,7 +54,86 @@ class AdminController extends ResourceController
         return $this->respondCreated($response);
     }
 
-    public function logout()  {
+    public function ubahPassword()
+{
+    // Ambil ID pengguna yang sedang login
+    $dataUser = auth()->id();
+
+   
+    
+    $cekUser = $this->AuthIdentitiesModel->where('user_id', $dataUser)->first();
+
+
+    $passwordLama = $this->request->getVar('password_lama');
+    $passwordBaru = $this->request->getVar('password_baru');
+
+    if (!password_verify($passwordLama, $cekUser['secret2'])) {
+        $response = [
+            'status' => false,
+            'message' => 'Verifikasi Password Salah, Gagal Merubah Password',
+            'data' => []
+        ];
+    } else {
+        
+        if (!empty($passwordBaru) && isset($passwordBaru)) {
+            // Hash password baru sebelum menyimpannya
+            $hashedPassword = password_hash($passwordBaru, PASSWORD_DEFAULT);
+            
+            // Update password pengguna di database
+            $this->AuthIdentitiesModel->update($cekUser['id'], ['secret2' => $hashedPassword]);
+
+            $response = [
+                'status' => true,
+                'message' => 'Password berhasil diubah',
+                'data' => []
+            ];
+        } else {
+            $response = [
+                'status' => false,
+                'message' => 'Password baru tidak boleh kosong dan harus minimal 8 karakter',
+                'data' => []
+            ];
+        }
+    }
+    return $this->respond($response);
+}
+
+public function ubahUsername() {
+    $dataUser = auth()->id();
+    $cekData = $this->UserModel->find($dataUser);
+
+    if (!empty($cekData)) {
+        $username = $this->request->getVar('username');
+        if (isset($username) && !empty($username)) {
+            $cekData->username = $username;
+
+            $this->UserModel->update($dataUser, $cekData);
+            $response = [
+                'status' => false,
+                'message' => 'Username Berhasil diubah',
+                'data' => $cekData
+            ];
+        } else {
+            $response = [
+                'status' => false,
+                'message' => 'Gagal Mengubah Username',
+                'data' => []
+            ];
+        }
+
+
+    } else {
+        $response = [
+            'status' => false,
+            'message' => 'Data Pengguna Tidak ditemukan',
+            'data' => []
+        ];
+    }
+    return $this->respondUpdated($response);
+}
+
+    public function logout()
+    {
         auth()->logout();
         auth()->user()->revokeAllAccessTokens();
 
@@ -61,8 +144,42 @@ class AdminController extends ResourceController
         ]);
     }
 
-    public function invalid() {
-        return $this-> respondCreated([
+    public function ubahEmail() {
+        $dataLogin = auth()->id();
+        $dataAdmin = $this->AuthIdentitiesModel->where('user_id', $dataLogin)->first();
+
+        if (!empty($dataAdmin)) {
+            $email = $this->request->getVar('email');
+            if (isset($email) && !empty($email)) {
+                $dataAdmin['secret'] = $email;
+
+                $this->AuthIdentitiesModel->update($dataLogin, $dataAdmin);
+                $response = [
+                    'status' => true,
+                    'message' => 'Email Berhasil diubah',
+                    'data' => $dataAdmin
+                ];
+            } else {
+                $response = [
+                    'status' => false,
+                    'message' => 'Gagal Mengubah Email',
+                    'data' => []
+                ];
+            }
+        } else {
+            $response = [
+                'status' => false,
+                'message' => 'Data Pengguna Tidak ditemukan',
+                'data' => []
+            ];
+        }
+        return $this->respondUpdated($response);
+    }
+
+
+    public function invalid()
+    {
+        return $this->respondCreated([
             'status' => false,
             'message' => 'Akses Gagal',
             'data' => []
