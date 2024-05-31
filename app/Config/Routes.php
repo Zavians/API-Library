@@ -24,6 +24,7 @@ $routes->group('api', ['namespace' => 'App\Controllers\Api'], function($routes) 
         $routes->put('ganti-password', 'AdminController::ubahPassword', ['filter' => 'adminauth']);
         $routes->put('ganti-username', 'AdminController::ubahUsername', ['filter' => 'adminauth']);
         $routes->put('ganti-email', 'AdminController::ubahEmail', ['filter' => 'adminauth']);
+        $routes->put('ganti-pegawai/(:num)', 'AdminController::updatePegawai/$1', ['filter' => 'adminauth']);
         $routes->get('invalid', 'AdminController::invalid');
 
         //Book Controller
@@ -34,6 +35,7 @@ $routes->group('api', ['namespace' => 'App\Controllers\Api'], function($routes) 
 
         //Peminjaman Controller
         $routes->put('perbarui-pinjaman/(:num)', 'PeminjamanController::updatePeminjaman/$1', ['filter' => 'adminauth']);
+
 
     });
 

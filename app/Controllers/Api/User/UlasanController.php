@@ -139,39 +139,52 @@ class UlasanController extends ResourceController
         return $this->respondUpdated($response);
     }
 
+
+
+
     public function deleteUlasan($id_buku, $id_ulasan)
-    {
-        $dataBuku = $this->BukuModel->find($id_buku);
-        if (!empty($dataBuku)) {
-            $dataUlasan = $this->UlasanModel->find($id_ulasan);
-            $user_id = auth()->id();
-            if ($dataUlasan['user_id'] != $user_id) {
+{
+    $dataBuku = $this->BukuModel->find($id_buku);
+    $dataUser = auth()->id();
+    $dataUlasan = $this->UlasanModel->where('user_id', $dataUser)->find($id_ulasan);
+
+    if (!empty($dataBuku)) {
+        if (!empty($dataUlasan)) {
+            if ($dataUlasan['user_id'] == $dataUser) {
+                $this->UlasanModel->delete($dataUlasan['id']);
                 $response = [
-                    'status' => false,
-                    'message' => 'Tidak bisa menghapus ulasan orang lain',
+                    'status' => true,
+                    'message' => 'Ulasan anda berhasil dihapus',
                     'data' => []
                 ];
             } else {
-                $this->UlasanModel->delete($dataUlasan);
                 $response = [
                     'status' => false,
-                    'message' => 'Ulasan anda berhasil dihapus',
+                    'message' => 'Tidak dapat menghapus Ulasan Orang Lain',
                     'data' => []
                 ];
             }
         } else {
             $response = [
                 'status' => false,
-                'message' => 'Data buku tidak ditemukan',
+                'message' => 'Tidak dapat menghapus Ulasan',
                 'data' => []
             ];
         }
-
-        return $this->respondDeleted($response);
+    } else {
+        $response = [
+            'status' => false,
+            'message' => 'Data buku tidak ditemukan',
+            'data' => []
+        ];
     }
+    return $this->respondDeleted($response);
+}
 
-    public function invalid() {
-        return $this-> respondCreated([
+
+    public function invalid()
+    {
+        return $this->respondCreated([
             'status' => false,
             'message' => 'Akses Gagal',
             'data' => []
